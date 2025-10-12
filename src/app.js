@@ -1,16 +1,18 @@
 import express from "express";
 import dotenv from "dotenv";
-import usersRoutes from "./routes/users.routes.js";
-import boardsRoutes from "./routes/boards.routes.js";
-import tasksRoutes from "./routes/tasks.routes.js";
+import routes from "./routes/index.js";
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
 
-app.use(usersRoutes);
-app.use(boardsRoutes);
-app.use(tasksRoutes);
+app.get("/", (_, res) =>
+  res.json({ message: "Trello-like REST API is running 🚀" })
+);
+
+app.use("/api", routes);
+
+app.use((req, res) => res.status(404).json({ message: "Not Found" }));
 
 export default app;

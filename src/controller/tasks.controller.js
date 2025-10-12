@@ -14,6 +14,8 @@ export const getTaskById = async (req, res) => {
     "SELECT * FROM tasks WHERE boardid=$1 AND id=$2",
     [boardId, taskId]
   );
+  if (data.rowCount === 0)
+    return res.status(404).json({ message: "Task not found" });
   res.json(data.rows[0]);
 };
 
@@ -29,19 +31,29 @@ export const createTask = async (req, res) => {
 
 export const updateTask = async (req, res) => {
   const { boardId, taskId } = req.params;
-  const { title, order, description } = req.body;
+  const { title, order, description, userId, columnId } = req.body;
   const data = await pool.query(
-    "UPDATE tasks SET title=$1, order_num=$2, description=$3 WHERE boardid=$4 AND id=$5 RETURNING *",
-    [title, order, description, boardId, taskId]
+    `UPDATE tasks SET
+       title=COALESCE($1,title),
+       order_num=COALESCE($2,order_num),
+       description=COALESCE($3,description),
+       userid=COALESCE($4,userid),
+       columnid=COALESCE($5,columnid)
+     WHERE boardid=$6 AND id=$7 RETURNING *`,
+    [title, order, description, userId, columnId, boardId, taskId]
   );
+  if (data.rowCount === 0)
+    return res.status(404).json({ message: "Task not found" });
   res.json(data.rows[0]);
 };
 
 export const deleteTask = async (req, res) => {
   const { boardId, taskId } = req.params;
-  await pool.query("DELETE FROM tasks WHERE boardid=$1 AND id=$2", [
-    boardId,
-    taskId,
-  ]);
+  const del = await pool.query(
+    "DELETE FROM tasks WHERE boardid=$1 AND id=$2 RETURNING id",
+    [boardId, taskId]
+  );
+  if (del.rowCount === 0)
+    return res.status(404).json({ message: "Task not found" });
   res.json({ message: "Task deleted" });
 };
