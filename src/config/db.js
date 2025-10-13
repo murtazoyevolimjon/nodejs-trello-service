@@ -13,7 +13,7 @@ export const pool = new Pool({
 });
 
 pool.connect()
-    .then(() => console.log("Database ulandingiz"))
+    .then(() => console.log("Siz databasega ulandingiz"))
     .catch(() => console.log("Databasega ulanish bilan muammo"))
 
 export default pool
