@@ -5,8 +5,8 @@ import { RegisterUser, UpdateUservalidation, validationfactory } from "../middle
 const UserRoutes = Router();
 
 UserRoutes.get("/", getAll);
-UserRoutes.post("/setup", setup);
-UserRoutes.post("/abort", deletetable);
+UserRoutes.post("/", setup);
+UserRoutes.post("/", deletetable);
 UserRoutes.post("/login", login);
 UserRoutes.post("/register", validationfactory(RegisterUser), register);
 UserRoutes.get("/:id", getOne);
