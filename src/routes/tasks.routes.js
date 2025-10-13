@@ -7,12 +7,13 @@ import {
   deleteTask,
 } from "../controller/tasks.controller.js";
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
-router.get("/boards/:boardId/tasks", getTasks);
-router.get("/boards/:boardId/tasks/:taskId", getTaskById);
-router.post("/boards/:boardId/tasks", createTask);
-router.put("/boards/:boardId/tasks/:taskId", updateTask);
-router.delete("/boards/:boardId/tasks/:taskId", deleteTask);
+
+router.get("/", getTasks);
+router.get("/:taskId", getTaskById);
+router.post("/", createTask);
+router.put("/:taskId", updateTask);
+router.delete("/:taskId", deleteTask);
 
 export default router;

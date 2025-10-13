@@ -9,10 +9,10 @@ import {
 
 const router = express.Router();
 
-router.get("/boards", getBoards);
-router.get("/boards/:boardId", getBoardById);
-router.post("/boards", createBoard);
-router.put("/boards/:boardId", updateBoard);
-router.delete("/boards/:boardId", deleteBoard);
+router.get("/", getBoards);
+router.get("/:boardId", getBoardById);
+router.post("/", createBoard);
+router.put("/:boardId", updateBoard);
+router.delete("/:boardId", deleteBoard);
 
 export default router;
