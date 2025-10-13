@@ -32,7 +32,7 @@ const register = async (req, res) => {
         );
         return res.status(200).send({
             success: true,
-            message: "Registered successfully",
+            message: "Muvaffaqiyatli ro'yxatdan o'tkazildi",
             data: rows[0]
         });
     } catch (err) {
@@ -45,10 +45,10 @@ const login = async (req, res) => {
         const { email, password } = req.body;
         const { rows } = await pool.query(`SELECT * FROM users WHERE email=$1`, [email]);
         const user = rows[0];
-        if (!user) return res.status(404).send({ message: "Not found, please register" });
+        if (!user) return res.status(404).send({ message: "Topilmadi, ro'yxatdan o'ting" });
         const passwordmatch = await bcrypt.compare(password, user.password);
-        if (!passwordmatch) return res.status(400).send({ message: "Password doesn't match" });
-        return res.status(200).send({ message: "Logged in successfully" });
+        if (!passwordmatch) return res.status(400).send({ message: "Parol mos emas" });
+        return res.status(200).send({ message: "Kirish muvaffaqiyatli amalga oshirildi" });
     } catch (err) {
         throw new Error(err);
     }
