@@ -1,4 +1,5 @@
 import express from "express";
+
 import {
   register,
   login,
@@ -7,14 +8,18 @@ import {
   updateUser,
   deleteUser,
 } from "../controller/users.controller.js";
+import {
+  validateUserRegister,
+  validateUserLogin,
+} from "../middlewares/validation.middleware.js";
 
-const router = express.Router();
+const userRouter = express.Router();
 
-router.post("/register", register);
-router.post("/login", login);
-router.get("/users", getUsers);
-router.get("/users/:userId", getUserById);
-router.put("/users/:userId", updateUser);
-router.delete("/users/:userId", deleteUser);
+userRouter.post("/register", register);
+userRouter.post("/login", validateUserLogin, login);
+userRouter.get("/", getUsers);
+userRouter.get("/:userId", getUserById);
+userRouter.put("/:userId", updateUser);
+userRouter.delete("/:userId", deleteUser);
 
-export default router;
+export default userRouter;
