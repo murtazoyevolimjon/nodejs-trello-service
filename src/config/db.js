@@ -9,5 +9,11 @@ export const pool = new Pool({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   host: process.env.DB_HOST,
-  port: process.env.DB_PORT ? Number(process.env.DB_PORT) : undefined,
+  port: process.env.DB_PORT
 });
+
+pool.connect()
+    .then(() => console.log("Database ulandingiz"))
+    .catch(() => console.log("Databasega ulanish bilan muammo"))
+
+export default pool
