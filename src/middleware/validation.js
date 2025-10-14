@@ -7,7 +7,7 @@ export const validationfactory = (schema) => (req, res, next) => {
             field: err.path.join(','),
             message: err.message
         }));
-        return res.status(422).json({ errors });
+        return res.status(411).json({ errors });
     }
     next();
 };

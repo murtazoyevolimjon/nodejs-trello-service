@@ -8,18 +8,26 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS boards (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4 (),
+    id SERIAL PRIMARY KEY,
     title TEXT NOT NULL,
-    columns JSONB
+    columns JSONB,
+    user_id INTEGER REFERENCES users (id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS tasks (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4 (),
+    id SERIAL PRIMARY KEY,
     title TEXT NOT NULL,
     order_num INTEGER,
     description TEXT,
-    userid UUID,
-    boardid UUID REFERENCES boards (id) ON DELETE CASCADE,
+    userid INTEGER,
+    boardid INTEGER REFERENCES boards (id) ON DELETE CASCADE,
     columnid TEXT,
     CONSTRAINT fk_user FOREIGN KEY (userid) REFERENCES users (id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS columns (
+    id SERIAL PRIMARY KEY,
+    title TEXT NOT NULL,
+    order_index INTEGER,
+    board_id INTEGER REFERENCES boards (id) ON DELETE CASCADE
 );
