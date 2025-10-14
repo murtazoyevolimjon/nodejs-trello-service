@@ -87,7 +87,7 @@ const deleteUser = async (req, res) => {
     try {
         const id = req.params.id;
         const result = await DeleteFromtable("users", id, res);
-        return result;
+        return result.rows;
     } catch (err) {
         throw new Error(err);
     }
