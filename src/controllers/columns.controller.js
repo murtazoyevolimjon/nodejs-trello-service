@@ -1,54 +1,80 @@
 import pool from "../config/db.js";
-import { DeleteFromtable, GetOne, pagination, Updatetable } from "../helpers/utils.js";
 
-export const ColumnController = {
-    getAllColumns: async function (req, res) {
-        try {
-            const result = await pagination("columns", req, res);
-            return result;
-        } catch (err) {
-            throw new Error(err);
-        }
-    },
 
-    getOneColumn: async function (req, res) {
-        try {
-            const id = req.params.id;
-            const result = await GetOne("columns", id, res);
-            return result;
-        } catch (err) {
-            throw new Error(err);
-        }
-    },
+export const createColumn = async (req, res) => {
+  try {
+    const { board_id, title, position } = req.body;
+    if (!board_id || !title)
+      return res.status(400).json({ message: "board_id va title kerak" });
 
-    post: async function (req, res) {
-        try {
-            const { title, order_index, board_id } = req.body;
-            const query = `INSERT INTO columns(title, order_index, board_id) VALUES($1, $2, $3) RETURNING *`;
-            const { rows } = await pool.query(query, [title, order_index, board_id]);
-            return res.status(200).send(rows);
-        } catch (err) {
-            throw new Error(err);
-        }
-    },
+    const { rows } = await pool.query(
+      `INSERT INTO columns (board_id, title, position)
+       VALUES ($1, $2, $3) RETURNING *`,
+      [board_id, title, position || 0]
+    );
 
-    update: async function (req, res) {
-        try {
-            const id = req.params.id;
-            const result = await Updatetable("columns", id, req, res);
-            return result;
-        } catch (err) {
-            throw new Error(err);
-        }
-    },
+    res.status(201).json({ success: true, data: rows[0] });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Server xatosi", error: err.message });
+  }
+};
 
-    delete: async function (req, res) {
-        try {
-            const id = req.params.id;
-            const result = await DeleteFromtable("columns", id, res);
-            return result;
-        } catch (err) {
-            throw new Error(err);
-        }
-    }
+
+export const getAllColumns = async (req, res) => {
+  try {
+    const { rows } = await pool.query("SELECT * FROM columns ORDER BY position");
+    res.json({ success: true, data: rows });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Server xatosi", error: err.message });
+  }
+};
+
+
+export const getColumn = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { rows } = await pool.query("SELECT * FROM columns WHERE id=$1", [id]);
+
+    if (rows.length === 0)
+      return res.status(404).json({ message: `${id} topilmadi` });
+
+    res.json({ success: true, data: rows[0] });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Server xatosi", error: err.message });
+  }
+};
+
+
+export const updateColumn = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, position } = req.body;
+
+    const { rows } = await pool.query(
+      `UPDATE columns SET title=$1, position=$2 WHERE id=$3 RETURNING *`,
+      [title, position, id]
+    );
+
+    if (rows.length === 0)
+      return res.status(404).json({ message: `${id} topilmadi` });
+
+    res.json({ success: true, data: rows[0] });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Server xatosi", error: err.message });
+  }
+};
+
+
+export const deleteColumn = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query("DELETE FROM columns WHERE id=$1 RETURNING *", [id]);
+
+    if (result.rowCount === 0)
+      return res.status(404).json({ message: `${id} topilmadi` });
+
+    res.json({ success: true, message: "O‘chirildi" });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Server xatosi", error: err.message });
+  }
 };

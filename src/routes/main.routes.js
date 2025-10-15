@@ -8,7 +8,7 @@ const MainRouter = Router({ mergeParams: true });
 
 MainRouter.use("/users", UserRoutes);
 MainRouter.use("/boards", BoardRoutes);
-MainRouter.use("/boards/:boardId/tasks", TaskRoutes);
+MainRouter.use("/tasks", TaskRoutes);
 MainRouter.use("/columns", ColumnRoutes);
 
 export default MainRouter;

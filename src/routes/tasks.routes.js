@@ -1,13 +1,12 @@
 import { Router } from "express";
-import { TaskController } from "../controllers/tasks.controller.js";
-import { taskvalidation, taskValidationUpdate, validationfactory } from "../middleware/validation.js";
+import { createTask, getAllTasks, getOneTask, updateTask, deleteTask } from "../controllers/tasks.controller.js";
 
-const TaskRoutes = Router({ mergeParams: true });
+const router = Router();
 
-TaskRoutes.get("/", TaskController.getAlltasks);
-TaskRoutes.get("/:id", TaskController.getOneTask);
-TaskRoutes.post("/", validationfactory(taskvalidation), TaskController.post);
-TaskRoutes.put("/:id", validationfactory(taskValidationUpdate), TaskController.update);
-TaskRoutes.delete("/:id", TaskController.delete);
+router.post("/", createTask);
+router.get("/", getAllTasks);
+router.get("/:id", getOneTask);
+router.put("/:id", updateTask);
+router.delete("/:id", deleteTask);
 
-export default TaskRoutes;
+export default router;
