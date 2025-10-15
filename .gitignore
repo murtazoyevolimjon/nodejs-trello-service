@@ -1,0 +1,27 @@
+# Node.js modules
+node_modules/
+
+# Environment (maxfiy ma'lumotlar)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# OS va IDE fayllari
+.DS_Store
+Thumbs.db
+
+# Optional: test va build fayllari
+/dist
+/build
+/coverage
+
+# TypeScript yoki boshqa temporary fayllar (agar ishlatsang)
+/*.tsbuildinfo
