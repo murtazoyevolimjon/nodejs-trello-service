@@ -1,13 +1,18 @@
 import { Router } from "express";
-import { BoardController } from "../controllers/boards.controller.js";
-import { boardUpdatevalidation, boardValidation, validationfactory } from "../middleware/validation.js";
+import {
+  createBoard,
+  getAllBoards,
+  getOneBoard,
+  updateBoard,
+  deleteBoard
+} from "../controllers/boards.controller.js";
 
-const BoardRoutes = Router();
+const router = Router();
 
-BoardRoutes.get("/", BoardController.getAll);
-BoardRoutes.get("/:id", BoardController.getOne);
-BoardRoutes.post("/", validationfactory(boardValidation), BoardController.post);
-BoardRoutes.put("/:id", validationfactory(boardUpdatevalidation), BoardController.update);
-BoardRoutes.delete("/:id", BoardController.delete);
+router.post("/", createBoard);
+router.get("/", getAllBoards);
+router.get("/:id", getOneBoard);
+router.put("/:id", updateBoard);
+router.delete("/:id", deleteBoard);
 
-export default BoardRoutes;
+export default router;

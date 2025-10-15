@@ -1,56 +1,75 @@
 import pool from "../config/db.js";
-import { DeleteFromtable, GetOne, pagination, Updatetable } from "../helpers/utils.js";
 
-export const BoardController = {
-    post: async function (req, res) {
-        try {
-            const { title, user_id } = req.body;
-            const values = [title, user_id];
-            const query = `INSERT INTO boards(title, user_id) VALUES($1, $2) RETURNING *`;
-            const { rows } = await pool.query(query, values);
-            return res.status(201).send({ message: "Board qo‘shildi", data: rows[0] });
-        } catch (err) {
-            return res.status(500).send({ message: err.message });
-        }
-    },
+export const createBoard = async (req, res) => {
+  try {
+    const { title, description } = req.body;
+    if (!title)
+      return res.status(400).send({ success: false, message: "Title kerak" });
 
-    getAll: async function (req, res) {
-        try {
-            const result = await pagination("boards", req, res);
-            return result;
-        } catch (err) {
-            return res.status(500).send({ message: err.message });
-        }
-    },
+    const { rows } = await pool.query(
+      `INSERT INTO boards (title, description) VALUES ($1, $2) RETURNING *`,
+      [title, description]
+    );
 
-    getOne: async function (req, res) {
-        try {
-            const id = req.params.id;
-            const tablename = "boards";
-            const result = await GetOne(tablename, id, res);
-            return result;
-        } catch (err) {
-            return res.status(500).send({ message: err.message });
-        }
-    },
+    res.status(201).send({ success: true, data: rows[0] });
+  } catch (err) {
+    res.status(500).send({ success: false, message: "Server xatosi", error: err.message });
+  }
+};
 
-    update: async function (req, res) {
-        try {
-            const id = req.params.id;
-            const result = await Updatetable("boards", id, req, res);
-            return result;
-        } catch (err) {
-            return res.status(500).send({ message: err.message });
-        }
-    },
+export const getAllBoards = async (req, res) => {
+  try {
+    const { rows } = await pool.query(`SELECT * FROM boards ORDER BY created_at DESC`);
+    res.status(200).send({ success: true, count: rows.length, data: rows });
+  } catch (err) {
+    res.status(500).send({ success: false, message: "Server xatosi", error: err.message });
+  }
+};
 
-    delete: async function (req, res) {
-        try {
-            const id = req.params.id;
-            const result = await DeleteFromtable("boards", id, res);
-            return result;
-        } catch (err) {
-            return res.status(500).send({ message: err.message });
-        }
-    }
+export const getOneBoard = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { rows } = await pool.query(`SELECT * FROM boards WHERE id=$1`, [id]);
+
+    if (!rows[0])
+      return res.status(404).send({ success: false, message: `${id} topilmadi` });
+
+    res.status(200).send({ success: true, data: rows[0] });
+  } catch (err) {
+    res.status(500).send({ success: false, message: "Server xatosi", error: err.message });
+  }
+};
+
+export const updateBoard = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description } = req.body;
+
+    const { rows } = await pool.query(
+      `UPDATE boards SET title=$1, description=$2 WHERE id=$3 RETURNING *`,
+      [title, description, id]
+    );
+
+    if (!rows[0])
+      return res.status(404).send({ success: false, message: `${id} topilmadi` });
+
+    res.status(200).send({ success: true, data: rows[0] });
+  } catch (err) {
+    res.status(500).send({ success: false, message: "Server xatosi", error: err.message });
+  }
+};
+
+export const deleteBoard = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { rowCount } = await pool.query(`DELETE FROM boards WHERE id=$1`, [id]);
+
+    if (rowCount === 0)
+      return res.status(404).send({ success: false, message: `${id} topilmadi` });
+
+    res.status(200).send({ success: true, message: "Board o‘chirildi" });
+  } catch (err) {
+    res.status(500).send({ success: false, message: "Server xatosi", error: err.message });
+  }
 };

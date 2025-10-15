@@ -1,13 +1,18 @@
 import { Router } from "express";
-import { ColumnController } from "../controllers/columns.controller.js";
-import { columnsvalidation, columnsvalidationupdate, validationfactory } from "../middleware/validation.js";
+import {
+  createColumn,
+  getAllColumns,
+  getColumn,
+  updateColumn,
+  deleteColumn
+} from "../controllers/columns.controller.js";
 
-const columnRoutes = Router();
+const router = Router();
 
-columnRoutes.get("/", ColumnController.getAllColumns);
-columnRoutes.get("/:id", ColumnController.getOneColumn);
-columnRoutes.post("/", validationfactory(columnsvalidation), ColumnController.post);
-columnRoutes.put("/:id", validationfactory(columnsvalidationupdate), ColumnController.update);
-columnRoutes.delete("/:id", ColumnController.delete);
+router.post("/", createColumn);      
+router.get("/", getAllColumns);      
+router.get("/:id", getColumn);       
+router.put("/:id", updateColumn);   
+router.delete("/:id", deleteColumn); 
 
-export default columnRoutes;
+export default router;

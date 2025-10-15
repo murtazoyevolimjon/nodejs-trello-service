@@ -25,9 +25,9 @@ CREATE TABLE IF NOT EXISTS tasks (
     CONSTRAINT fk_user FOREIGN KEY (userid) REFERENCES users (id) ON DELETE SET NULL
 );
 
-CREATE TABLE IF NOT EXISTS columns (
-    id SERIAL PRIMARY KEY,
-    title TEXT NOT NULL,
-    order_index INTEGER,
-    board_id INTEGER REFERENCES boards (id) ON DELETE CASCADE
+CREATE TABLE columns (
+    id UUID DEFAULT gen_random_uuid () PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    board_id UUID REFERENCES boards (id) ON DELETE CASCADE,
+    position INT DEFAULT 0
 );
