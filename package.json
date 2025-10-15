@@ -21,7 +21,8 @@
   },
   "homepage": "https://github.com/murtazoyevolimjon/nodejs-trello-service#readme",
   "dependencies": {
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "start": "^5.1.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
