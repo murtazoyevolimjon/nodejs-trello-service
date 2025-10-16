@@ -4,7 +4,8 @@ import {
   getAllBoards,
   getOneBoard,
   updateBoard,
-  deleteBoard
+  deleteBoard,
+  searchAndFilter
 } from "../controllers/boards.controller.js";
 
 const router = Router();
@@ -14,5 +15,6 @@ router.get("/", getAllBoards);
 router.get("/:id", getOneBoard);
 router.put("/:id", updateBoard);
 router.delete("/:id", deleteBoard);
+router.get("/search/filter", searchAndFilter);
 
 export default router;

@@ -2,88 +2,77 @@ import pool from "../config/db.js";
 
 export const createTask = async (req, res) => {
   try {
-    const { title, description, status, boardid } = req.body;
-
-    if (!title || !boardid) {
-      return res.status(400).send({ message: "title va boardid kerak" });
-    }
-
-    const result = await pool.query(
-      `INSERT INTO tasks (title, description, status, boardid)
-       VALUES ($1, $2, $3, $4) RETURNING *`,
-      [title, description, status || "todo", boardid]
+    const { title, board_id, assigned_to, status } = req.body;
+    const { rows } = await pool.query(
+      `INSERT INTO tasks(title, board_id, assigned_to, status) VALUES($1, $2, $3, $4) RETURNING *`,
+      [title, board_id, assigned_to, status]
     );
-
-    res.status(201).send({ success: true, data: result.rows[0] });
+    res.status(201).json({ success: true, data: rows[0] });
   } catch (err) {
-    res
-      .status(500)
-      .send({ success: false, message: "Server xatosi", error: err.message });
+    res.status(500).json({ success: false, message: "Server xatosi", error: err.message });
   }
 };
 
 export const getAllTasks = async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM tasks ORDER BY id DESC");
-    res.status(200).send({ success: true, data: result.rows });
+    const { rows } = await pool.query(`SELECT * FROM tasks ORDER BY created_at DESC`);
+    res.status(200).json({ success: true, count: rows.length, data: rows });
   } catch (err) {
-    res
-      .status(500)
-      .send({ success: false, message: "Server xatosi", error: err.message });
+    res.status(500).json({ success: false, message: "Server xatosi", error: err.message });
   }
 };
 
 export const getOneTask = async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await pool.query("SELECT * FROM tasks WHERE id=$1", [id]);
-    if (!result.rows.length)
-      return res.status(404).send({ message: `${id} topilmadi` });
-    res.status(200).send({ success: true, data: result.rows[0] });
+    const { rows } = await pool.query(`SELECT * FROM tasks WHERE id=$1`, [id]);
+    if (!rows[0]) return res.status(404).json({ success: false, message: `${id} topilmadi` });
+    res.status(200).json({ success: true, data: rows[0] });
   } catch (err) {
-    res
-      .status(500)
-      .send({ success: false, message: "Server xatosi", error: err.message });
+    res.status(500).json({ success: false, message: "Server xatosi", error: err.message });
   }
 };
 
 export const updateTask = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, status } = req.body;
-
-    const result = await pool.query(
-      `UPDATE tasks
-       SET title = COALESCE($1, title),
-           description = COALESCE($2, description),
-           status = COALESCE($3, status)
-       WHERE id=$4
-       RETURNING *`,
-      [title, description, status, id]
+    const { title, status, assigned_to } = req.body;
+    const { rows } = await pool.query(
+      `UPDATE tasks SET title=$1, status=$2, assigned_to=$3 WHERE id=$4 RETURNING *`,
+      [title, status, assigned_to, id]
     );
-
-    if (!result.rows.length)
-      return res.status(404).send({ message: `${id} topilmadi` });
-    res.status(200).send({ success: true, data: result.rows[0] });
+    if (!rows[0]) return res.status(404).json({ success: false, message: `${id} topilmadi` });
+    res.status(200).json({ success: true, data: rows[0] });
   } catch (err) {
-    res
-      .status(500)
-      .send({ success: false, message: "Server xatosi", error: err.message });
+    res.status(500).json({ success: false, message: "Server xatosi", error: err.message });
   }
 };
 
 export const deleteTask = async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await pool.query("DELETE FROM tasks WHERE id=$1 RETURNING *", [id]);
-    if (!result.rows.length)
-      return res.status(404).send({ message: `${id} topilmadi` });
-    res
-      .status(200)
-      .send({ success: true, message: "O‘chirildi", data: result.rows[0] });
+    const { rowCount } = await pool.query(`DELETE FROM tasks WHERE id=$1`, [id]);
+    if (rowCount === 0) return res.status(404).json({ success: false, message: `${id} topilmadi` });
+    res.status(200).json({ success: true, message: "Task o‘chirildi" });
   } catch (err) {
-    res
-      .status(500)
-      .send({ success: false, message: "Server xatosi", error: err.message });
+    res.status(500).json({ success: false, message: "Server xatosi", error: err.message });
+  }
+};
+
+export const searchAndFilter = async (req, res, next) => {
+  try {
+    const { title, status, sortBy, order } = req.query;
+    let query = 'SELECT * FROM tasks WHERE 1=1';
+    const params = [];
+    let paramIndex = 1;
+
+    if (title) { query += ` AND title ILIKE $${paramIndex++}`; params.push(`%${title}%`); }
+    if (status) { query += ` AND status=$${paramIndex++}`; params.push(status); }
+    if (sortBy) { query += ` ORDER BY ${sortBy} ${order && order.toLowerCase() === 'desc' ? 'DESC' : 'ASC'}`; }
+
+    const { rows } = await pool.query(query, params);
+    res.status(200).json({ success: true, count: rows.length, data: rows });
+  } catch (err) {
+    next(err);
   }
 };

@@ -3,14 +3,13 @@ import pool from "../config/db.js";
 
 export const createColumn = async (req, res) => {
   try {
-    const { board_id, title, position } = req.body;
-    if (!board_id || !title)
-      return res.status(400).json({ message: "board_id va title kerak" });
+    const { title, board_id } = req.body;
+    if (!title || !board_id)
+      return res.status(400).json({ success: false, message: "Title va board_id kerak" });
 
     const { rows } = await pool.query(
-      `INSERT INTO columns (board_id, title, position)
-       VALUES ($1, $2, $3) RETURNING *`,
-      [board_id, title, position || 0]
+      `INSERT INTO columns (title, board_id) VALUES ($1, $2) RETURNING *`,
+      [title, board_id]
     );
 
     res.status(201).json({ success: true, data: rows[0] });
@@ -19,26 +18,24 @@ export const createColumn = async (req, res) => {
   }
 };
 
-
 export const getAllColumns = async (req, res) => {
   try {
-    const { rows } = await pool.query("SELECT * FROM columns ORDER BY position");
-    res.json({ success: true, data: rows });
+    const { rows } = await pool.query(`SELECT * FROM columns ORDER BY created_at DESC`);
+    res.status(200).json({ success: true, count: rows.length, data: rows });
   } catch (err) {
     res.status(500).json({ success: false, message: "Server xatosi", error: err.message });
   }
 };
 
 
-export const getColumn = async (req, res) => {
+export const getOneColumn = async (req, res) => {
   try {
     const { id } = req.params;
-    const { rows } = await pool.query("SELECT * FROM columns WHERE id=$1", [id]);
+    const { rows } = await pool.query(`SELECT * FROM columns WHERE id=$1`, [id]);
+    if (!rows[0])
+      return res.status(404).json({ success: false, message: `${id} topilmadi` });
 
-    if (rows.length === 0)
-      return res.status(404).json({ message: `${id} topilmadi` });
-
-    res.json({ success: true, data: rows[0] });
+    res.status(200).json({ success: true, data: rows[0] });
   } catch (err) {
     res.status(500).json({ success: false, message: "Server xatosi", error: err.message });
   }
@@ -48,17 +45,15 @@ export const getColumn = async (req, res) => {
 export const updateColumn = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, position } = req.body;
-
+    const { title } = req.body;
     const { rows } = await pool.query(
-      `UPDATE columns SET title=$1, position=$2 WHERE id=$3 RETURNING *`,
-      [title, position, id]
+      `UPDATE columns SET title=$1 WHERE id=$2 RETURNING *`,
+      [title, id]
     );
+    if (!rows[0])
+      return res.status(404).json({ success: false, message: `${id} topilmadi` });
 
-    if (rows.length === 0)
-      return res.status(404).json({ message: `${id} topilmadi` });
-
-    res.json({ success: true, data: rows[0] });
+    res.status(200).json({ success: true, data: rows[0] });
   } catch (err) {
     res.status(500).json({ success: false, message: "Server xatosi", error: err.message });
   }
@@ -68,13 +63,31 @@ export const updateColumn = async (req, res) => {
 export const deleteColumn = async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await pool.query("DELETE FROM columns WHERE id=$1 RETURNING *", [id]);
+    const { rowCount } = await pool.query(`DELETE FROM columns WHERE id=$1`, [id]);
+    if (rowCount === 0)
+      return res.status(404).json({ success: false, message: `${id} topilmadi` });
 
-    if (result.rowCount === 0)
-      return res.status(404).json({ message: `${id} topilmadi` });
-
-    res.json({ success: true, message: "O‘chirildi" });
+    res.status(200).json({ success: true, message: "Column o‘chirildi" });
   } catch (err) {
     res.status(500).json({ success: false, message: "Server xatosi", error: err.message });
+  }
+};
+
+// SEARCH & FILTER
+export const searchAndFilter = async (req, res, next) => {
+  try {
+    const { title, board_id, sortBy, order } = req.query;
+    let query = 'SELECT * FROM columns WHERE 1=1';
+    const params = [];
+    let paramIndex = 1;
+
+    if (title) { query += ` AND title ILIKE $${paramIndex++}`; params.push(`%${title}%`); }
+    if (board_id) { query += ` AND board_id = $${paramIndex++}`; params.push(board_id); }
+    if (sortBy) { query += ` ORDER BY ${sortBy} ${order && order.toLowerCase() === 'desc' ? 'DESC' : 'ASC'}`; }
+
+    const { rows } = await pool.query(query, params);
+    res.status(200).json({ success: true, count: rows.length, data: rows });
+  } catch (err) {
+    next(err);
   }
 };
