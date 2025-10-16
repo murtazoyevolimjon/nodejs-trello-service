@@ -1,5 +1,4 @@
 -- Active: 1759236673354@@127.0.0.1@5432@node_trello_service
-
 CREATE DATABASE node_trello_service;
 
 \c node_trello_service;
@@ -37,3 +36,7 @@ CREATE TABLE tasks (
 );
 
 drop TABLE tasks;
+
+select * from users;
+
+drop DATABASE people

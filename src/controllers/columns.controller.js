@@ -73,21 +73,3 @@ export const deleteColumn = async (req, res) => {
   }
 };
 
-// SEARCH & FILTER
-export const searchAndFilter = async (req, res, next) => {
-  try {
-    const { title, board_id, sortBy, order } = req.query;
-    let query = 'SELECT * FROM columns WHERE 1=1';
-    const params = [];
-    let paramIndex = 1;
-
-    if (title) { query += ` AND title ILIKE $${paramIndex++}`; params.push(`%${title}%`); }
-    if (board_id) { query += ` AND board_id = $${paramIndex++}`; params.push(board_id); }
-    if (sortBy) { query += ` ORDER BY ${sortBy} ${order && order.toLowerCase() === 'desc' ? 'DESC' : 'ASC'}`; }
-
-    const { rows } = await pool.query(query, params);
-    res.status(200).json({ success: true, count: rows.length, data: rows });
-  } catch (err) {
-    next(err);
-  }
-};

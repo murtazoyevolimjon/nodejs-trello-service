@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { 
-  deletetable, deleteUser, getAll, getOne, login, register, setup, update, searchAndFilter    
+  deletetable, deleteUser, getAll, getOne, login, register, setup, update  
 } from "../controllers/users.controller.js";
 import { 
   RegisterUser, 
@@ -9,10 +9,6 @@ import {
 } from "../middleware/validation.js";
 
 const UserRoutes = Router();
-
-
-UserRoutes.get("/search/filter", searchAndFilter);
-
 
 UserRoutes.post("/setup", setup);
 UserRoutes.post("/deletetable", deletetable);

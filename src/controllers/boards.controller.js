@@ -53,21 +53,3 @@ export const deleteBoard = async (req, res) => {
     res.status(500).send({ success: false, message: "Server xatosi", error: err.message });
   }
 };
-
-export const searchAndFilter = async (req, res, next) => {
-  try {
-    const { title, owner, sortBy, order } = req.query;
-    let query = 'SELECT * FROM boards WHERE 1=1';
-    const params = [];
-    let paramIndex = 1;
-
-    if (title) { query += ` AND title ILIKE $${paramIndex++}`; params.push(`%${title}%`); }
-    if (owner) { query += ` AND owner_id = $${paramIndex++}`; params.push(owner); }
-    if (sortBy) { query += ` ORDER BY ${sortBy} ${order && order.toLowerCase() === 'desc' ? 'DESC' : 'ASC'}`; }
-
-    const { rows } = await pool.query(query, params);
-    res.status(200).json({ success: true, count: rows.length, data: rows });
-  } catch (err) {
-    next(err);
-  }
-};

@@ -27,7 +27,7 @@ export const DeleteFromtable = async (tablename, id, res) => {
         const { rows } = await pool.query(query, [id]);
         return res.status(200).send({
             message: `${id} deleted from table`,
-            data: rows[0]
+            data: rows[0] 
         });
     } catch (err) {
         throw new Error(err);

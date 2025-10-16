@@ -13,13 +13,13 @@ export const validationfactory = (schema) => (req, res, next) => {
 };
 
 export const RegisterUser = Joi.object({
-    name: Joi.string().required(),
+    name: Joi.string().min(4).required(),
     email: Joi.string().email().required(),
-    password: Joi.string().min(3).max(10).required()
+    password: Joi.string().min(4).max(10).required()
 });
 
 export const UpdateUservalidation = Joi.object({
-    name: Joi.string(),
+    name: Joi.string().min(4),
     email: Joi.string().email(),
     password: Joi.string().min(3).max(10)
 });
