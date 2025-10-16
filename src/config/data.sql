@@ -1,33 +1,39 @@
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+-- Active: 1759236673354@@127.0.0.1@5432@node_trello_service
 
-CREATE TABLE IF NOT EXISTS users (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4 (),
-    name TEXT NOT NULL,
-    email TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL
+CREATE DATABASE node_trello_service;
+
+\c node_trello_service;
+
+CREATE EXTENSION if NOT EXISTS "pgcrypto";
+
+CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
+    name VARCHAR NOT NULL,
+    email VARCHAR UNIQUE NOT NULL,
+    password VARCHAR NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS boards (
-    id SERIAL PRIMARY KEY,
-    title TEXT NOT NULL,
-    columns JSONB,
-    user_id INTEGER REFERENCES users (id) ON DELETE CASCADE
-);
+SELECT * FROM tasks;
 
-CREATE TABLE IF NOT EXISTS tasks (
-    id SERIAL PRIMARY KEY,
-    title TEXT NOT NULL,
-    order_num INTEGER,
-    description TEXT,
-    userid INTEGER,
-    boardid INTEGER REFERENCES boards (id) ON DELETE CASCADE,
-    columnid TEXT,
-    CONSTRAINT fk_user FOREIGN KEY (userid) REFERENCES users (id) ON DELETE SET NULL
+CREATE TABLE boards (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
+    title VARCHAR NOT NULL
 );
 
 CREATE TABLE columns (
-    id UUID DEFAULT gen_random_uuid () PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    board_id UUID REFERENCES boards (id) ON DELETE CASCADE,
-    position INT DEFAULT 0
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
+    name VARCHAR NOT NULL,
+    boardId UUID REFERENCES boards (id) on delete CASCADE
 );
+
+CREATE TABLE tasks (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
+    title VARCHAR not NULL,
+    orderr SMALLINT NOT NULL,
+    descriptionn TEXT,
+    userId UUID REFERENCES users (id) on delete CASCADE,
+    boardId UUID REFERENCES boards (id) on delete CASCADE,
+    columnId UUID REFERENCES columns (id) on delete CASCADE
+);
+
+drop TABLE tasks;
