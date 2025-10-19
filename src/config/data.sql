@@ -1,7 +1,8 @@
--- Active: 1759236673354@@127.0.0.1@5432@node_trello_service
+-- Active: 1759236673354@@127.0.0.1@5432@fullnodejs_trello_service
+
 CREATE DATABASE node_trello_service;
 
-\c node_trello_service;
+
 
 CREATE EXTENSION if NOT EXISTS "pgcrypto";
 
@@ -12,11 +13,11 @@ CREATE TABLE users (
     password VARCHAR NOT NULL
 );
 
-SELECT * FROM tasks;
 
 CREATE TABLE boards (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
-    title VARCHAR NOT NULL
+    title VARCHAR NOT NULL,
+    userId UUID REFERENCES users (id) on DElete CASCADE
 );
 
 CREATE TABLE columns (
@@ -32,11 +33,5 @@ CREATE TABLE tasks (
     descriptionn TEXT,
     userId UUID REFERENCES users (id) on delete CASCADE,
     boardId UUID REFERENCES boards (id) on delete CASCADE,
-    columnId UUID REFERENCES columns (id) on delete CASCADE
+    columnId UUID REFERENCES columnss (id) on delete CASCADE
 );
-
-drop TABLE tasks;
-
-select * from users;
-
-drop DATABASE people
