@@ -5,7 +5,7 @@ export const validation = (schema) => {
 
         if(error){
             return res.status(400).json({
-                message: "Validate xatosi",
+                message: "Validatsiya xatosi",
                 errors: err.details.map((err) => err.message)
             })
         }

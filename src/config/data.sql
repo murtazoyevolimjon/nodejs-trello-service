@@ -1,6 +1,6 @@
--- Active: 1759236673354@@127.0.0.1@5432@fullnodejs_trello_service
+-- Active: 1759236673354@@127.0.0.1@5432@nodejs_trello_service
 
-CREATE DATABASE node_trello_service;
+CREATE DATABASE nodejs_trello_service;
 
 
 

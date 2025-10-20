@@ -16,8 +16,8 @@ export const columnValidation = Joi.object({
 
 
 export const columnUpdateValidation = Joi.object({
-  name: Joi.string().min(2).messages({
+  name: Joi.string().min(3).messages({
     "string.base": "name string bulishi kerak",
-    "string.min": "name kamida 2 ta bulishi kerak"
+    "string.min": "name kamida 3 ta bulishi kerak"
   })
 })

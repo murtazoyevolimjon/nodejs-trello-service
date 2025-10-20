@@ -1,4 +1,18 @@
+// src/middleware/errorHandler.js
 
-export const errorHandler = (error, req, res, next) => {
-    res.status(error.status || 500 ).json({message: error.message || `error in the server`})
-}
+export const errorHandler = (err, req, res, next) => {
+  console.error("❌ Xatolik:", err);
+
+  // Agar xatoda status kodi bo‘lsa, uni olamiz, bo‘lmasa 500 (Server error)
+  const statusCode = err.status || 500;
+
+  // Xabarni aniqlaymiz
+  const message = err.message || "Serverda kutilmagan xatolik yuz berdi";
+
+  // Foydalanuvchiga javob qaytaramiz
+  res.status(statusCode).json({
+    success: false,
+    status: statusCode,
+    message,
+  });
+};

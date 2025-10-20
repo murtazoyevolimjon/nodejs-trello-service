@@ -2,11 +2,11 @@ import Joi from "joi"
 
 
 export const tasksValidation = Joi.object({
-  title: Joi.string().min(2).required().messages({
+  title: Joi.string().min(4).required().messages({
     "string.required": "title shart",
     "string.base": "title matn bulishi kerak",
     "string.empty": "title bush bulish mumkin emas",
-    "string.min": "title kamida 2 ta bulishi kerak"
+    "string.min": "title kamida 4 ta bulishi kerak"
   }),
   descriptionn: Joi.string().allow("").messages({
     "string.base": "descriptionn matn bulishi kerak"
@@ -32,10 +32,10 @@ export const tasksValidation = Joi.object({
 
 
 export const updateValidation = Joi.object({
-  title: Joi.string().min(2).messages({
+  title: Joi.string().min(4).messages({
     "string.base": "title matn bulishi kerak",
     "string.empty": "title bush bulish mumkin emas",
-    "string.min": "title kamida 2 ta bulishi kerak"
+    "string.min": "title kamida 4 ta bulishi kerak"
   }),
   descriptionn: Joi.string().allow("").messages({
     "string.base": "descriptionn matn bulishi kerak"

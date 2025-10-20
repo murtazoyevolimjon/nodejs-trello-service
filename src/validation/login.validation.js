@@ -7,10 +7,10 @@ export const loginValidation = Joi.object({
     "string.empty": "email bush bulish mumkin emas",
     "string.email": "email notugri kiritilgan",
   }),
-  password: Joi.string().min(6).required().messages({
+  password: Joi.string().min(4).required().messages({
     "string.required": "password shart",
     "string.base": "password string bulishi kerak",
     "string.empty": "parol bush bulish mumkin emas",
-    "string.min": "parol kamida 6 ta bulishi kerak"
+    "string.min": "parol kamida 4 ta bulishi kerak"
   })
 })

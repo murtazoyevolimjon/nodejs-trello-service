@@ -2,10 +2,10 @@ import Joi from "joi"
 
 
 export const usersValidation = Joi.object({
-  name: Joi.string().min(2).required().messages({
+  name: Joi.string().min(4).required().messages({
     "string.required": "name shart",
     "string.empty": "name bush bulish mumkin emas",
-    "string.min": "ism kamida 2 ta bulishi kerak",
+    "string.min": "ism kamida 4 ta bulishi kerak",
     "string:base": "name string bulishi kerak"
   }),
 
@@ -16,11 +16,11 @@ export const usersValidation = Joi.object({
     "string.email": "email notugri kiritilgan",
   }),
   
-  password: Joi.string().min(6).required().messages({
+  password: Joi.string().min(4).required().messages({
     "string.required": "password shart",
     "string.base": "password string bulishi kerak",
     "string.empty": "parol bush bulish mumkin emas",
-    "string.min": "parol kamida 6 ta bulishi kerak"
+    "string.min": "parol kamida 4 ta bulishi kerak"
   })
 })
 
@@ -30,7 +30,7 @@ export const updateValidation = Joi.object({
   name: Joi.string().min(2).messages({
     "string.base": "name string bulishi kerak",
     "string.empty": "name bush bulish mumkin emas",
-    "string.min": "ism kamida 2 ta bulishi kerak"
+    "string.min": "Ism kamida 2 ta bulishi kerak"
   }),
 
   email: Joi.string().email().messages({
